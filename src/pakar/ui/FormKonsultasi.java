@@ -15,6 +15,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.InternationalFormatter;
 import pakar.db.KoneksiDb;
@@ -37,9 +40,11 @@ public class FormKonsultasi extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
 
         initTblGejala();
+        setTblGejalaSelectionAction();
 
         setFormatDesimal(txtMB);
         setFormatDesimal(txtMD);
+        
     }
 
     private void initTblGejala() {
@@ -51,8 +56,22 @@ public class FormKonsultasi extends javax.swing.JFrame {
         );
 
         tblGejala.setModel(modelTblGejala);
-        
+
         loadGejala();
+    }
+
+    private void setTblGejalaSelectionAction() {
+        final ListSelectionModel tblGejalaSelectionModel = tblGejala.getSelectionModel();
+        tblGejalaSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblGejalaSelectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!tblGejalaSelectionModel.isSelectionEmpty()) {
+                    taGejala.setText("");
+                    taGejala.append(tblGejala.getValueAt(tblGejala.getSelectedRow(), 1).toString());
+                }
+            }
+        });
     }
 
     //menampilkan data gejala ke tabel (tabel kiri atas)
@@ -113,14 +132,21 @@ public class FormKonsultasi extends javax.swing.JFrame {
         txtMD = new javax.swing.JFormattedTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblGejala = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        taGejala = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        txtMB.setText("0.0");
         txtMB.setPreferredSize(new java.awt.Dimension(4, 30));
 
+        txtMD.setText("0.0");
         txtMD.setPreferredSize(new java.awt.Dimension(4, 30));
 
         tblGejala.setModel(new javax.swing.table.DefaultTableModel(
@@ -135,6 +161,17 @@ public class FormKonsultasi extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(tblGejala);
+
+        jLabel1.setText("MD");
+
+        jLabel2.setText("MB");
+
+        jLabel3.setText("Gejala yang dipilih");
+
+        taGejala.setEditable(false);
+        taGejala.setColumns(20);
+        taGejala.setRows(5);
+        jScrollPane2.setViewportView(taGejala);
 
         jMenu1.setText("File");
 
@@ -157,10 +194,15 @@ public class FormKonsultasi extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 130, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtMB, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .addComponent(txtMD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtMB, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                        .addComponent(txtMD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -170,8 +212,16 @@ public class FormKonsultasi extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -220,10 +270,15 @@ public class FormKonsultasi extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JMenuItem menuExit;
+    private javax.swing.JTextArea taGejala;
     private javax.swing.JTable tblGejala;
     private javax.swing.JFormattedTextField txtMB;
     private javax.swing.JFormattedTextField txtMD;
