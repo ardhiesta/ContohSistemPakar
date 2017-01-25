@@ -7,16 +7,25 @@ package pakar.ui;
 
 import java.awt.Dimension;
 import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import javax.swing.JFormattedTextField;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.InternationalFormatter;
+import pakar.db.KoneksiDb;
 
 /**
  *
  * @author linuxluv
  */
 public class FormKonsultasi extends javax.swing.JFrame {
+
+    private DefaultTableModel modelTblGejala;
 
     /**
      * Creates new form FormKonsultasi
@@ -27,8 +36,50 @@ public class FormKonsultasi extends javax.swing.JFrame {
         this.setMinimumSize(new Dimension(800, 600));
         this.setLocationRelativeTo(null);
 
+        initTblGejala();
+
         setFormatDesimal(txtMB);
         setFormatDesimal(txtMD);
+    }
+
+    private void initTblGejala() {
+        modelTblGejala = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{
+                    "ID Gejala", "Gejala"
+                }
+        );
+
+        tblGejala.setModel(modelTblGejala);
+        
+        loadGejala();
+    }
+
+    //menampilkan data gejala ke tabel (tabel kiri atas)
+    public void loadGejala() {
+        // menghapus seluruh data
+        modelTblGejala.getDataVector().removeAllElements();
+        // memberi tahu bahwa data telah kosong
+        modelTblGejala.fireTableDataChanged();
+
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM gejala";
+            ResultSet r = s.executeQuery(sql);
+            while (r.next()) {
+                // lakukan penelusuran baris
+                Object[] o = new Object[5];
+                o[0] = r.getString("id_gejala");
+                o[1] = r.getString("nama_gejala");
+                modelTblGejala.addRow(o);
+            }
+            r.close();
+            s.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // mengatur format desimal MB dan MD
@@ -60,6 +111,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
 
         txtMB = new javax.swing.JFormattedTextField();
         txtMD = new javax.swing.JFormattedTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblGejala = new javax.swing.JTable();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuExit = new javax.swing.JMenuItem();
@@ -69,6 +122,19 @@ public class FormKonsultasi extends javax.swing.JFrame {
         txtMB.setPreferredSize(new java.awt.Dimension(4, 30));
 
         txtMD.setPreferredSize(new java.awt.Dimension(4, 30));
+
+        tblGejala.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblGejala);
 
         jMenu1.setText("File");
 
@@ -84,7 +150,9 @@ public class FormKonsultasi extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(279, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtMB, javax.swing.GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
                     .addComponent(txtMD, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -94,10 +162,13 @@ public class FormKonsultasi extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(195, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -141,7 +212,9 @@ public class FormKonsultasi extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JMenuItem menuExit;
+    private javax.swing.JTable tblGejala;
     private javax.swing.JFormattedTextField txtMB;
     private javax.swing.JFormattedTextField txtMD;
     // End of variables declaration//GEN-END:variables
