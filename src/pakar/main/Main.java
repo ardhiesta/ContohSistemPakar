@@ -5,6 +5,8 @@
  */
 package pakar.main;
 
+import pakar.ui.FormKonsultasi;
+
 /**
  *
  * @author linuxluv
@@ -15,7 +17,8 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        FormKonsultasi formKonsultasi = new FormKonsultasi();
+        formKonsultasi.setVisible(true);
     }
     
 }
