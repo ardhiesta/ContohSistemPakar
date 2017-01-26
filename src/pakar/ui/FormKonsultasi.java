@@ -27,6 +27,7 @@ import pakar.db.KoneksiDb;
  * @author linuxluv
  */
 public class FormKonsultasi extends javax.swing.JFrame {
+
     private DefaultTableModel modelTblFakta;
     private DefaultTableModel modelTblGejala;
 
@@ -41,19 +42,19 @@ public class FormKonsultasi extends javax.swing.JFrame {
 
         initTblGejala();
         setTblGejalaSelectionAction();
-        
+
         initTblFakta();
 
         setFormatDesimal(txtMB);
         setFormatDesimal(txtMD);
-        
+
     }
-    
+
     private void initTblFakta() {
         modelTblFakta = new DefaultTableModel(
-                new Object[][] {}, new String[] { "ID Gejala", "Gejala", "CF" }
+                new Object[][]{}, new String[]{"ID Gejala", "Gejala", "CF"}
         );
-        
+
         tblFakta.setModel(modelTblFakta);
     }
 
@@ -127,6 +128,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
                 return formatter;
             }
         });
+
+        jFormattedTextField.setText("0.0");
     }
 
     /**
@@ -153,19 +156,17 @@ public class FormKonsultasi extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         taKesimpulan = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnTambah = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
+        btnProses = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuExit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        txtMB.setText("0.0");
         txtMB.setPreferredSize(new java.awt.Dimension(4, 30));
 
-        txtMD.setText("0.0");
         txtMD.setPreferredSize(new java.awt.Dimension(4, 30));
 
         tblGejala.setModel(new javax.swing.table.DefaultTableModel(
@@ -214,11 +215,21 @@ public class FormKonsultasi extends javax.swing.JFrame {
 
         jLabel5.setText("Gejala-gejala yang diinputkan");
 
-        jButton1.setText("Tambahkan");
+        btnTambah.setText("Tambahkan");
+        btnTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTambahActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Clear");
+        btnClear.setText("Clear");
 
-        jButton3.setText("Proses");
+        btnProses.setText("Proses");
+        btnProses.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProsesActionPerformed(evt);
+            }
+        });
 
         jMenu1.setText("File");
 
@@ -243,40 +254,43 @@ public class FormKonsultasi extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(153, 153, 153)
-                        .addComponent(jButton2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3)
-                        .addGap(0, 28, Short.MAX_VALUE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 28, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(70, 70, 70)
-                                        .addComponent(jLabel1)
-                                        .addGap(93, 93, 93))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 317, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnClear)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel2)
+                                        .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(70, 70, 70)
+                                            .addComponent(jLabel1)
+                                            .addGap(93, 93, 93))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGap(73, 73, 73)
+                                        .addComponent(btnTambah))))
+                            .addComponent(btnProses, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -290,22 +304,19 @@ public class FormKonsultasi extends javax.swing.JFrame {
                             .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnTambah)
+                            .addComponent(btnClear))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3))
+                        .addComponent(btnProses)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1)))
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -316,6 +327,56 @@ public class FormKonsultasi extends javax.swing.JFrame {
         // keluar dari program
         System.exit(0);
     }//GEN-LAST:event_menuExitActionPerformed
+
+    private void btnProsesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProsesActionPerformed
+        int jmlFakta = tblFakta.getRowCount();
+        if (jmlFakta > 0) {
+
+        } else {
+            JOptionPane.showMessageDialog(rootPane, "pilih gejala terleih dulu!");
+        }
+    }//GEN-LAST:event_btnProsesActionPerformed
+
+    private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
+        double mb = Double.parseDouble(txtMB.getText());
+        double md = Double.parseDouble(txtMD.getText());
+        if (!taGejala.getText().toString().equals("") && mb + md == 1.0) {
+            double selisihMbMd = mb - md;
+            double minimal = mb;
+            if (md < minimal) {
+                minimal = md;
+            }
+            double selisihMin = 1 - minimal;
+            double CF = selisihMbMd / selisihMin;
+
+            String idGejala = "";
+            if (!tblGejala.getSelectionModel().isSelectionEmpty()) {
+                idGejala = tblGejala.getValueAt(tblGejala.getSelectedRow(), 0).toString();
+            }
+            String cfValue = String.valueOf(CF);
+            addTblFaktaRow(idGejala, tblGejala.getValueAt(tblGejala.getSelectedRow(), 1).toString(), cfValue);
+            taGejala.setText("");
+            txtMB.setText("0.0");
+            txtMD.setText("0.0");
+        } else {
+            if (mb+md != 1.0) {
+                JOptionPane.showMessageDialog(rootPane, "harap masukkan nilai MB dan MD yang benar!");
+            }
+            if (taGejala.getText().toString().equals("")) {
+                JOptionPane.showMessageDialog(rootPane, "pilih dahulu satu buah gejala!");
+            }
+        }
+    }//GEN-LAST:event_btnTambahActionPerformed
+
+    public void addTblFaktaRow(String idGejala, String deskripsi, String cfValue) {
+        modelTblFakta.fireTableDataChanged();
+        Object[] o = new Object[5];
+        o[0] = idGejala;
+        o[1] = deskripsi;
+        o[2] = cfValue;
+        modelTblFakta.addRow(o);
+        tblGejala.clearSelection();
+    }
 
     /**
      * @param args the command line arguments
@@ -353,9 +414,9 @@ public class FormKonsultasi extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnProses;
+    private javax.swing.JButton btnTambah;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
