@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -21,6 +22,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.InternationalFormatter;
 import pakar.db.KoneksiDb;
+import pakar.model.Gejala;
+import pakar.model.Rule;
+import pakar.model.TitikAkupuntur;
 
 /**
  *
@@ -331,11 +335,127 @@ public class FormKonsultasi extends javax.swing.JFrame {
     private void btnProsesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProsesActionPerformed
         int jmlFakta = tblFakta.getRowCount();
         if (jmlFakta > 0) {
-
+            ArrayList<Gejala> arrGejalaFakta = new ArrayList<Gejala>();
+            for (int i = 0; i < jmlFakta; i++) {
+                Gejala gejala = new Gejala();
+                gejala.setIdGejala(tblFakta.getValueAt(i, 0).toString());
+                gejala.setDeskripsi(tblFakta.getValueAt(i, 1).toString());
+                gejala.setCfValue(Double.parseDouble(tblFakta.getValueAt(i, 2).toString()));
+                arrGejalaFakta.add(gejala);
+            }
+            // get rule
+            getRule(arrGejalaFakta);
         } else {
             JOptionPane.showMessageDialog(rootPane, "pilih gejala terleih dulu!");
         }
     }//GEN-LAST:event_btnProsesActionPerformed
+
+    public void getRule(ArrayList<Gejala> arrGejalaFakta) {
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            Statement s = c.createStatement();
+            // TODO: lihat query asli di bitbucket
+            String sql = "SELECT ru.id_rule AS id_rule, " + "p.id_titik AS penyakit_konklusi, "
+                    + "ru.cf_pakar AS cf_rule FROM rule ru "
+                    + "LEFT JOIN titik_akupuntur p ON ru.id_titik = p.id_titik " + "GROUP BY ru.id_rule;";
+            ResultSet r = s.executeQuery(sql);
+            ArrayList<Rule> arrRule = new ArrayList<Rule>();
+            while (r.next()) {
+                Rule rule = new Rule();
+                rule.setIdRule(r.getString("id_rule"));
+                rule.setArrGejala(getGejalaPremis(r.getString("id_rule"), arrGejalaFakta));
+                rule.setTitikAkupuntur(getTitikAkupunturById(r.getString("penyakit_konklusi")));
+                rule.setCfValue(Double.parseDouble(r.getString("cf_rule")));
+
+                arrRule.add(rule);
+            }
+
+            // debug1
+            for (int i = 0; i < arrRule.size(); i++) {
+//                txtDebug.append("\n");
+//                txtDebug.append("--> Rule : " + arrRule.get(i).getIdRule() + "\n");
+//                txtDebug.append("--> Premis\n");
+                if (arrRule.get(i).getArrGejala() != null) {
+                    for (int j = 0; j < arrRule.get(i).getArrGejala().size(); j++) {
+//                        txtDebug.append("ID Gejala : " + arrRule.get(i).getArrGejala().get(j).getIdGejala() + " ~ ");
+//                        txtDebug.append("CF : " + arrRule.get(i).getArrGejala().get(j).getCfValue() + "\n");
+                    }
+                }
+//                txtDebug.append("-----------------------------\n");
+//                txtDebug.append("--> Kesimpulan \n");
+//                txtDebug.append("ID Penyakit : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+//                txtDebug.append("CF Rule : " + arrRule.get(i).getCfValue() + "\n");
+//                txtDebug.append(">>>-----------------------<<<\n");
+            }
+
+//            prosesHitungCF(arrRule);
+            r.close();
+            s.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public TitikAkupuntur getTitikAkupunturById(String id) {
+        TitikAkupuntur titikAkupuntur = new TitikAkupuntur();
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM titik_akupuntur WHERE id_titik ='" + id + "'";
+            ResultSet r = s.executeQuery(sql);
+            while (r.next()) {
+                titikAkupuntur.setIdTitik(r.getString("id_titik"));
+                titikAkupuntur.setNamaTitik(r.getString("nama_titik"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return titikAkupuntur;
+    }
+
+    // isi CF gejala dari fakta
+    public Gejala getGejalaById(String id, ArrayList<Gejala> arrGejalaFakta) {
+        Gejala gejala = new Gejala();
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM gejala WHERE id_gejala='" + id + "'";
+            ResultSet r = s.executeQuery(sql);
+            while (r.next()) {
+                gejala.setIdGejala(r.getString("id_gejala"));
+                gejala.setDeskripsi(r.getString("nama_gejala"));
+                gejala.setCfValue(0);
+                for (int i = 0; i < arrGejalaFakta.size(); i++) {
+                    Gejala gejalaFakta = arrGejalaFakta.get(i);
+                    if (gejalaFakta.getIdGejala().equals(r.getString("id_gejala"))) {
+                        gejala.setCfValue(gejalaFakta.getCfValue());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return gejala;
+    }
+
+    private ArrayList<Gejala> getGejalaPremis(String id, ArrayList<Gejala> arrGejalaFakta) {
+        ArrayList<Gejala> arrGejala = new ArrayList<Gejala>();
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            Statement s = c.createStatement();
+            String sql = "SELECT * FROM relasi_rule_gejala WHERE id_rule='" + id + "'";
+            ResultSet r = s.executeQuery(sql);
+            while (r.next()) {
+                arrGejala.add(getGejalaById(r.getString("id_gejala"), arrGejalaFakta));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return arrGejala;
+    }
 
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         double mb = Double.parseDouble(txtMB.getText());
@@ -359,7 +479,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
             txtMB.setText("0.0");
             txtMD.setText("0.0");
         } else {
-            if (mb+md != 1.0) {
+            if (mb + md != 1.0) {
                 JOptionPane.showMessageDialog(rootPane, "harap masukkan nilai MB dan MD yang benar!");
             }
             if (taGejala.getText().toString().equals("")) {
