@@ -14,6 +14,11 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -354,7 +359,6 @@ public class FormKonsultasi extends javax.swing.JFrame {
         try {
             Connection c = KoneksiDb.getKoneksi();
             Statement s = c.createStatement();
-            // TODO: lihat query asli di bitbucket
             String sql = "SELECT ru.id_rule AS id_rule, " + "p.id_titik AS penyakit_konklusi, "
                     + "ru.cf_pakar AS cf_rule FROM rule ru "
                     + "LEFT JOIN titik_akupuntur p ON ru.id_titik = p.id_titik " + "GROUP BY ru.id_rule;";
@@ -371,29 +375,99 @@ public class FormKonsultasi extends javax.swing.JFrame {
             }
 
             // debug1
-            for (int i = 0; i < arrRule.size(); i++) {
-//                txtDebug.append("\n");
-//                txtDebug.append("--> Rule : " + arrRule.get(i).getIdRule() + "\n");
-//                txtDebug.append("--> Premis\n");
-                if (arrRule.get(i).getArrGejala() != null) {
-                    for (int j = 0; j < arrRule.get(i).getArrGejala().size(); j++) {
-//                        txtDebug.append("ID Gejala : " + arrRule.get(i).getArrGejala().get(j).getIdGejala() + " ~ ");
-//                        txtDebug.append("CF : " + arrRule.get(i).getArrGejala().get(j).getCfValue() + "\n");
-                    }
-                }
-//                txtDebug.append("-----------------------------\n");
-//                txtDebug.append("--> Kesimpulan \n");
-//                txtDebug.append("ID Penyakit : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
-//                txtDebug.append("CF Rule : " + arrRule.get(i).getCfValue() + "\n");
-//                txtDebug.append(">>>-----------------------<<<\n");
-            }
+            showMatchedRules(arrRule);
 
-//            prosesHitungCF(arrRule);
+            ArrayList<Rule> arrRuleWithCFComposite = prosesHitungCF(arrRule);
+
+            sortRuleByCFComposite(arrRuleWithCFComposite);
+
             r.close();
             s.close();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // mengurutkan rule berdasarkan nilai CF komposit yang telah dihitung
+    private void sortRuleByCFComposite(ArrayList<Rule> arrRule) {
+        Collections.sort(arrRule, new Comparator<Rule>() {
+            @Override
+            public int compare(Rule c1, Rule c2) {
+                return Double.compare(c2.getCfValue(), c1.getCfValue());
+            }
+        });
+
+        for (int i = 0; i < arrRule.size(); i++) {
+            taKesimpulan.append("ID Rule : " + arrRule.get(i).getIdRule() + " ~ ");
+            taKesimpulan.append("ID Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+            taKesimpulan.append("CF : " + arrRule.get(i).getCfValue()+"\n");
+        }
+    }
+
+    private ArrayList<Rule> prosesHitungCF(ArrayList<Rule> arrRule) {
+        // simpan ke ArrayList<Rule>
+        // data CF komposit hasil perhitungan included
+        ArrayList<Rule> arrCFHasil = new ArrayList<>();
+        for (int i = 0; i < arrRule.size(); i++) {
+            Rule ruleCFKomposit = new Rule();
+            ruleCFKomposit.setIdRule(arrRule.get(i).getIdRule());
+            ArrayList<Gejala> arrG = arrRule.get(i).getArrGejala();
+
+            double minCFGejala = 0;
+            double minCFPenyakit = 0;
+            if (arrG != null) {
+                List<Double> lCFGejala = new ArrayList<Double>();
+                for (int j = 0; j < arrG.size(); j++) {
+                    lCFGejala.add(arrG.get(j).getCfValue());
+                }
+                if (lCFGejala.size() > 0) {
+                    minCFGejala = Collections.min(lCFGejala);
+                }
+            }
+
+            if (arrG.size() > 0) {
+                ruleCFKomposit.setCfValue(minCFGejala * arrRule.get(i).getCfValue());
+            }
+
+            ruleCFKomposit.setTitikAkupuntur(arrRule.get(i).getTitikAkupuntur());
+            arrCFHasil.add(ruleCFKomposit);
+        }
+
+        // debug 2
+        // menampilkan CF komposit untuk masing-masing titik akupuntur yang Rule-nya tereksekusi
+        showRules(arrCFHasil);
+
+        return arrCFHasil;
+    }
+
+    // menampilkan CF untuk masing-masing titik akupuntur yang Rule-nya tereksekusi
+    private void showRules(ArrayList<Rule> arrCFHasil) {
+        System.out.println("--> DEBUG 2 : CF untuk masing-masing titik akupuntur yang Rule-nya tereksekusi");
+        for (int i = 0; i < arrCFHasil.size(); i++) {
+            System.out.print("ID Rule : " + arrCFHasil.get(i).getIdRule() + " ~ ");
+            System.out.print("ID Titik akupuntur : " + arrCFHasil.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+            System.out.println("CF : " + arrCFHasil.get(i).getCfValue());
+        }
+        System.out.println(">>>-----------------------<<<\n");
+    }
+
+    // menampilkan semua rule yang ada, mencocokan gejala pada rule dengan gejala yang diinputkan
+    private void showMatchedRules(ArrayList<Rule> arrRule) {
+        System.out.println("---> daftar rule : ");
+        for (int i = 0; i < arrRule.size(); i++) {
+            System.out.println("--> Rule : " + arrRule.get(i).getIdRule());
+            System.out.println("--> Premis Rule : ");
+            if (arrRule.get(i).getArrGejala() != null) {
+                for (int j = 0; j < arrRule.get(i).getArrGejala().size(); j++) {
+                    System.out.println("ID Gejala : " + arrRule.get(i).getArrGejala().get(j).getIdGejala()
+                            + " ~ CF : " + arrRule.get(i).getArrGejala().get(j).getCfValue());
+                }
+            }
+            System.out.println("--> Kesimpulan Rule : ");
+            System.out.println("ID Penyakit : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ "
+                    + " CF Rule : " + arrRule.get(i).getCfValue());
+            System.out.println("-----------------------------------------------");
         }
     }
 
