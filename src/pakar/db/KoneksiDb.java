@@ -21,8 +21,8 @@ public class KoneksiDb {
         if (koneksi == null) {
             try {
                 String url = "jdbc:mysql://localhost:3306/tesis_db";
-                String user = "linuxluv";
-                String password = "linuxluv";
+                String user = "root";
+                String password = "";
                 DriverManager.registerDriver(new com.mysql.jdbc.Driver());
                 koneksi = DriverManager.getConnection(url, user, password);
             } catch (SQLException t) {
