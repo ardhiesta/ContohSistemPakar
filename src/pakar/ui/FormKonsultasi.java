@@ -534,7 +534,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         double mb = Double.parseDouble(txtMB.getText());
         double md = Double.parseDouble(txtMD.getText());
-        if (!taGejala.getText().toString().equals("") && mb + md == 1.0) {
+        if (!taGejala.getText().toString().equals("") && (mb != 0.0 || md != 0.0)) {
             double selisihMbMd = mb - md;
             double minimal = mb;
             if (md < minimal) {
@@ -553,11 +553,11 @@ public class FormKonsultasi extends javax.swing.JFrame {
             txtMB.setText("0.0");
             txtMD.setText("0.0");
         } else {
-            if (mb + md != 1.0) {
-                JOptionPane.showMessageDialog(rootPane, "harap masukkan nilai MB dan MD yang benar!");
-            }
             if (taGejala.getText().toString().equals("")) {
                 JOptionPane.showMessageDialog(rootPane, "pilih dahulu satu buah gejala!");
+            }
+            if (mb == 0 && md == 0) {
+                JOptionPane.showMessageDialog(rootPane, "nilai MB dan MD tidak boleh dua-duanya 0 !");
             }
         }
     }//GEN-LAST:event_btnTambahActionPerformed
