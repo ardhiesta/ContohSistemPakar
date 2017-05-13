@@ -66,6 +66,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
         );
 
         tblFakta.setModel(modelTblFakta);
+        tblFakta.getColumnModel().getColumn(0).setMaxWidth(75);
+        tblFakta.getColumnModel().getColumn(2).setMaxWidth(75);
     }
 
     private void initTblGejala() {
