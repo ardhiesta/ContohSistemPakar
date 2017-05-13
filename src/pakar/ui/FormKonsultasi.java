@@ -57,7 +57,6 @@ public class FormKonsultasi extends javax.swing.JFrame {
 
         setFormatDesimal(txtMB);
         setFormatDesimal(txtMD);
-
     }
 
     private void initTblFakta() {
@@ -68,6 +67,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
         tblFakta.setModel(modelTblFakta);
         tblFakta.getColumnModel().getColumn(0).setMaxWidth(75);
         tblFakta.getColumnModel().getColumn(2).setMaxWidth(75);
+        
+        tblFakta.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
     private void initTblGejala() {
@@ -171,8 +172,9 @@ public class FormKonsultasi extends javax.swing.JFrame {
         taKesimpulan = new javax.swing.JTextArea();
         jLabel5 = new javax.swing.JLabel();
         btnTambah = new javax.swing.JButton();
-        btnClear = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         btnProses = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuExit = new javax.swing.JMenuItem();
@@ -229,19 +231,31 @@ public class FormKonsultasi extends javax.swing.JFrame {
 
         jLabel5.setText("Gejala-gejala yang diinputkan");
 
-        btnTambah.setText("Tambahkan");
+        btnTambah.setText("Pilih gejala");
         btnTambah.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnTambahActionPerformed(evt);
             }
         });
 
-        btnClear.setText("Clear");
+        btnCancel.setText("Batal pilih gejala");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         btnProses.setText("Proses");
         btnProses.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnProsesActionPerformed(evt);
+            }
+        });
+
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
             }
         });
 
@@ -265,36 +279,37 @@ public class FormKonsultasi extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 40, Short.MAX_VALUE)
+                        .addGap(0, 48, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(btnClear)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel2)
-                                        .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(70, 70, 70)
-                                            .addComponent(jLabel1)
-                                            .addGap(93, 93, 93))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jLabel2)
+                                    .addComponent(txtMB, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(70, 70, 70)
+                                        .addComponent(jLabel1)
+                                        .addGap(93, 93, 93))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGap(73, 73, 73)
-                                        .addComponent(btnTambah))))
-                            .addComponent(btnProses, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtMD, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnReset)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnProses))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(btnCancel)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnTambah))))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
@@ -320,13 +335,15 @@ public class FormKonsultasi extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnTambah)
-                            .addComponent(btnClear))
+                            .addComponent(btnCancel))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(btnProses)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnProses)
+                            .addComponent(btnReset))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -407,9 +424,12 @@ public class FormKonsultasi extends javax.swing.JFrame {
         });
 
         for (int i = 0; i < arrRule.size(); i++) {
-            taKesimpulan.append("ID Rule : " + arrRule.get(i).getIdAturan() + " ~ ");
-            taKesimpulan.append("ID Kelompok Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
-            taKesimpulan.append("CF : " + arrRule.get(i).getCfValue()+"\n");
+            // hanya menampilkan aturan yang nilai CF nya tidak 0
+            if (arrRule.get(i).getCfValue() > 0) {
+                taKesimpulan.append("ID Aturan : " + arrRule.get(i).getIdAturan() + " ~ ");
+                taKesimpulan.append("ID Kelompok Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+                taKesimpulan.append("CF : " + arrRule.get(i).getCfValue() + "\n");
+            }
         }
     }
 
@@ -570,6 +590,19 @@ public class FormKonsultasi extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnTambahActionPerformed
 
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        // TODO add your handling code here:
+        if (tblFakta.getSelectedRow() > -1) {
+            modelTblFakta.removeRow(tblFakta.getSelectedRow());
+        }
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        // mengulang proses perhitungan
+        modelTblFakta.setRowCount(0);
+        taKesimpulan.setText("");
+    }//GEN-LAST:event_btnResetActionPerformed
+
     public void addTblFaktaRow(String idGejala, String deskripsi, String cfValue) {
         modelTblFakta.fireTableDataChanged();
         Object[] o = new Object[5];
@@ -616,8 +649,9 @@ public class FormKonsultasi extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnCancel;
     private javax.swing.JButton btnProses;
+    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTambah;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
