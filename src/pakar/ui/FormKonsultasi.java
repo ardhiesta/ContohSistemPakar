@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.InternationalFormatter;
 import pakar.db.KoneksiDb;
 import pakar.model.Gejala;
-import pakar.model.Rule;
+import pakar.model.Aturan;
 import pakar.model.TitikAkupuntur;
 
 /**
@@ -76,6 +77,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
         );
 
         tblGejala.setModel(modelTblGejala);
+        tblGejala.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        tblGejala.getColumnModel().getColumn(0).setMaxWidth(75);
 
         loadGejala();
     }
@@ -359,17 +362,20 @@ public class FormKonsultasi extends javax.swing.JFrame {
         try {
             Connection c = KoneksiDb.getKoneksi();
             Statement s = c.createStatement();
-            String sql = "SELECT ru.id_rule AS id_rule, " + "p.id_titik AS penyakit_konklusi, "
-                    + "ru.cf_pakar AS cf_rule FROM rule ru "
-                    + "LEFT JOIN titik_akupuntur p ON ru.id_titik = p.id_titik " + "GROUP BY ru.id_rule;";
+            String sql = "SELECT ru.id_aturan AS id_aturan, p.id_kel_titik AS titik_konklusi, "
+                    + "ru.cf_pakar AS cf_aturan FROM aturan ru LEFT JOIN kel_titik_akp p ON ru.id_kel_titik = p.id_kel_titik "
+                    + "GROUP BY ru.id_aturan";
+//                    "SELECT ru.id_rule AS id_rule, " + "p.id_titik AS penyakit_konklusi, "
+//                    + "ru.cf_pakar AS cf_rule FROM rule ru "
+//                    + "LEFT JOIN titik_akupuntur p ON ru.id_titik = p.id_titik " + "GROUP BY ru.id_rule;";
             ResultSet r = s.executeQuery(sql);
-            ArrayList<Rule> arrRule = new ArrayList<Rule>();
+            ArrayList<Aturan> arrRule = new ArrayList<Aturan>();
             while (r.next()) {
-                Rule rule = new Rule();
-                rule.setIdRule(r.getString("id_rule"));
-                rule.setArrGejala(getGejalaPremis(r.getString("id_rule"), arrGejalaFakta));
-                rule.setTitikAkupuntur(getTitikAkupunturById(r.getString("penyakit_konklusi")));
-                rule.setCfValue(Double.parseDouble(r.getString("cf_rule")));
+                Aturan rule = new Aturan();
+                rule.setIdAturan(r.getString("id_aturan"));
+                rule.setArrGejala(getGejalaPremis(r.getString("id_aturan"), arrGejalaFakta));
+                rule.setTitikAkupuntur(getTitikAkupunturById(r.getString("titik_konklusi")));
+                rule.setCfValue(Double.parseDouble(r.getString("cf_aturan")));
 
                 arrRule.add(rule);
             }
@@ -377,7 +383,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
             // debug1
             showMatchedRules(arrRule);
 
-            ArrayList<Rule> arrRuleWithCFComposite = prosesHitungCF(arrRule);
+            ArrayList<Aturan> arrRuleWithCFComposite = prosesHitungCF(arrRule);
 
             sortRuleByCFComposite(arrRuleWithCFComposite);
 
@@ -390,28 +396,28 @@ public class FormKonsultasi extends javax.swing.JFrame {
     }
 
     // mengurutkan rule berdasarkan nilai CF komposit yang telah dihitung
-    private void sortRuleByCFComposite(ArrayList<Rule> arrRule) {
-        Collections.sort(arrRule, new Comparator<Rule>() {
+    private void sortRuleByCFComposite(ArrayList<Aturan> arrRule) {
+        Collections.sort(arrRule, new Comparator<Aturan>() {
             @Override
-            public int compare(Rule c1, Rule c2) {
+            public int compare(Aturan c1, Aturan c2) {
                 return Double.compare(c2.getCfValue(), c1.getCfValue());
             }
         });
 
         for (int i = 0; i < arrRule.size(); i++) {
-            taKesimpulan.append("ID Rule : " + arrRule.get(i).getIdRule() + " ~ ");
-            taKesimpulan.append("ID Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+            taKesimpulan.append("ID Rule : " + arrRule.get(i).getIdAturan() + " ~ ");
+            taKesimpulan.append("ID Kelompok Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
             taKesimpulan.append("CF : " + arrRule.get(i).getCfValue()+"\n");
         }
     }
 
-    private ArrayList<Rule> prosesHitungCF(ArrayList<Rule> arrRule) {
+    private ArrayList<Aturan> prosesHitungCF(ArrayList<Aturan> arrRule) {
         // simpan ke ArrayList<Rule>
         // data CF komposit hasil perhitungan included
-        ArrayList<Rule> arrCFHasil = new ArrayList<>();
+        ArrayList<Aturan> arrCFHasil = new ArrayList<>();
         for (int i = 0; i < arrRule.size(); i++) {
-            Rule ruleCFKomposit = new Rule();
-            ruleCFKomposit.setIdRule(arrRule.get(i).getIdRule());
+            Aturan ruleCFKomposit = new Aturan();
+            ruleCFKomposit.setIdAturan(arrRule.get(i).getIdAturan());
             ArrayList<Gejala> arrG = arrRule.get(i).getArrGejala();
 
             double minCFGejala = 0;
@@ -442,31 +448,31 @@ public class FormKonsultasi extends javax.swing.JFrame {
     }
 
     // menampilkan CF untuk masing-masing titik akupuntur yang Rule-nya tereksekusi
-    private void showRules(ArrayList<Rule> arrCFHasil) {
-        System.out.println("--> DEBUG 2 : CF untuk masing-masing titik akupuntur yang Rule-nya tereksekusi");
+    private void showRules(ArrayList<Aturan> arrCFHasil) {
+        System.out.println("--> DEBUG 2 : CF untuk masing-masing titik akupuntur yang Aturannya-nya tereksekusi");
         for (int i = 0; i < arrCFHasil.size(); i++) {
-            System.out.print("ID Rule : " + arrCFHasil.get(i).getIdRule() + " ~ ");
-            System.out.print("ID Titik akupuntur : " + arrCFHasil.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+            System.out.print("ID Aturan : " + arrCFHasil.get(i).getIdAturan() + " ~ ");
+            System.out.print("ID Kelompok Titik akupuntur : " + arrCFHasil.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
             System.out.println("CF : " + arrCFHasil.get(i).getCfValue());
         }
         System.out.println(">>>-----------------------<<<\n");
     }
 
     // menampilkan semua rule yang ada, mencocokan gejala pada rule dengan gejala yang diinputkan
-    private void showMatchedRules(ArrayList<Rule> arrRule) {
-        System.out.println("---> daftar rule : ");
+    private void showMatchedRules(ArrayList<Aturan> arrRule) {
+        System.out.println("---> daftar aturan : ");
         for (int i = 0; i < arrRule.size(); i++) {
-            System.out.println("--> Rule : " + arrRule.get(i).getIdRule());
-            System.out.println("--> Premis Rule : ");
+            System.out.println("--> Aturan : " + arrRule.get(i).getIdAturan());
+            System.out.println("--> Premis Aturan : ");
             if (arrRule.get(i).getArrGejala() != null) {
                 for (int j = 0; j < arrRule.get(i).getArrGejala().size(); j++) {
                     System.out.println("ID Gejala : " + arrRule.get(i).getArrGejala().get(j).getIdGejala()
                             + " ~ CF : " + arrRule.get(i).getArrGejala().get(j).getCfValue());
                 }
             }
-            System.out.println("--> Kesimpulan Rule : ");
-            System.out.println("ID Penyakit : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ "
-                    + " CF Rule : " + arrRule.get(i).getCfValue());
+            System.out.println("--> Kesimpulan Aturan : ");
+            System.out.println("ID Kelompok Titik Akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ "
+                    + " CF Aturan : " + arrRule.get(i).getCfValue());
             System.out.println("-----------------------------------------------");
         }
     }
@@ -476,11 +482,11 @@ public class FormKonsultasi extends javax.swing.JFrame {
         try {
             Connection c = KoneksiDb.getKoneksi();
             Statement s = c.createStatement();
-            String sql = "SELECT * FROM titik_akupuntur WHERE id_titik ='" + id + "'";
+            String sql = "SELECT * FROM kel_titik_akp WHERE id_kel_titik ='" + id + "'";
             ResultSet r = s.executeQuery(sql);
             while (r.next()) {
-                titikAkupuntur.setIdTitik(r.getString("id_titik"));
-                titikAkupuntur.setNamaTitik(r.getString("nama_titik"));
+                titikAkupuntur.setIdTitik(r.getString("id_kel_titik"));
+                titikAkupuntur.setNamaTitik(r.getString("ket_kel_titik"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -519,7 +525,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
         try {
             Connection c = KoneksiDb.getKoneksi();
             Statement s = c.createStatement();
-            String sql = "SELECT * FROM relasi_rule_gejala WHERE id_rule='" + id + "'";
+            String sql = "SELECT * FROM relasi_aturan_gejala WHERE id_aturan='" + id + "'";
             ResultSet r = s.executeQuery(sql);
             while (r.next()) {
                 arrGejala.add(getGejalaById(r.getString("id_gejala"), arrGejalaFakta));
