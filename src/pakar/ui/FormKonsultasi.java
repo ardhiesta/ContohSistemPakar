@@ -8,6 +8,7 @@ package pakar.ui;
 import java.awt.Dimension;
 import java.math.RoundingMode;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,6 +24,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -30,16 +33,17 @@ import javax.swing.text.InternationalFormatter;
 import pakar.db.KoneksiDb;
 import pakar.model.Gejala;
 import pakar.model.Aturan;
-import pakar.model.TitikAkupuntur;
+import pakar.model.KelompokTitikAkupuntur;
 
 /**
  *
  * @author linuxluv
+ * 
  */
 public class FormKonsultasi extends javax.swing.JFrame {
-
     private DefaultTableModel modelTblFakta;
     private DefaultTableModel modelTblGejala;
+    DecimalFormat df = new DecimalFormat("#.##");
 
     /**
      * Creates new form FormKonsultasi
@@ -57,6 +61,28 @@ public class FormKonsultasi extends javax.swing.JFrame {
 
         setFormatDesimal(txtMB);
         setFormatDesimal(txtMD);
+        
+        initTxtSearch();
+    }
+    
+    private void initTxtSearch(){
+        txtSearchGejala.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                searchDataGejala(txtSearchGejala.getText().toString(), modelTblGejala);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                searchDataGejala(txtSearchGejala.getText().toString(), modelTblGejala);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+            
+        });
     }
 
     private void initTblFakta() {
@@ -67,7 +93,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
         tblFakta.setModel(modelTblFakta);
         tblFakta.getColumnModel().getColumn(0).setMaxWidth(75);
         tblFakta.getColumnModel().getColumn(2).setMaxWidth(75);
-        
+
         tblFakta.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
@@ -83,7 +109,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
         tblGejala.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         tblGejala.getColumnModel().getColumn(0).setMaxWidth(75);
 
-        loadGejala();
+//        loadGejala();
+        searchDataGejala("", modelTblGejala);
     }
 
     private void setTblGejalaSelectionAction() {
@@ -124,6 +151,42 @@ public class FormKonsultasi extends javax.swing.JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /* menghitung jumlah record tabel user */
+    public void searchDataGejala(String keyword, DefaultTableModel modelTbl) {
+//        modelTbl.getDataVector().removeAllElements();
+//        modelTbl.fireTableDataChanged();
+        
+        ResultSet r = null;
+        PreparedStatement ps = null;
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            String sql = "select * from gejala where id_gejala like ? or nama_gejala like ?";
+            ps = c.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keyword + "%");
+            r = ps.executeQuery();
+            /* clear tabel, hapus semua baris sebelum menampilkan hanya record terpilih */
+            modelTbl.setRowCount(0);
+            while (r.next()) {
+                Object[] o = new Object[5];
+                o[0] = r.getString("id_gejala");
+                o[1] = r.getString("nama_gejala");
+                modelTbl.addRow(o);
+            }
+            r.close();
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormKonsultasi.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                ps.close();
+                r.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(FormKonsultasi.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -175,6 +238,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
         btnCancel = new javax.swing.JButton();
         btnProses = new javax.swing.JButton();
         btnReset = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtSearchGejala = new javax.swing.JTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuExit = new javax.swing.JMenuItem();
@@ -259,6 +324,11 @@ public class FormKonsultasi extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("cari gejala:");
+
+        txtSearchGejala.setPreferredSize(new java.awt.Dimension(80, 30));
+        txtSearchGejala.setSize(new java.awt.Dimension(80, 30));
+
         jMenu1.setText("File");
 
         menuExit.setText("Exit");
@@ -279,7 +349,12 @@ public class FormKonsultasi extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtSearchGejala, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -315,10 +390,14 @@ public class FormKonsultasi extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(txtSearchGejala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane1))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
@@ -427,8 +506,8 @@ public class FormKonsultasi extends javax.swing.JFrame {
             // hanya menampilkan aturan yang nilai CF nya tidak 0
             if (arrRule.get(i).getCfValue() > 0) {
                 taKesimpulan.append("ID Aturan : " + arrRule.get(i).getIdAturan() + " ~ ");
-                taKesimpulan.append("ID Kelompok Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
-                taKesimpulan.append("CF : " + arrRule.get(i).getCfValue() + "\n");
+                taKesimpulan.append("ID Kelompok Titik akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdKelTitik() + " ~ ");
+                taKesimpulan.append("CF : " + df.format(arrRule.get(i).getCfValue()) + "\n");
             }
         }
     }
@@ -474,7 +553,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
         System.out.println("--> DEBUG 2 : CF untuk masing-masing titik akupuntur yang Aturannya-nya tereksekusi");
         for (int i = 0; i < arrCFHasil.size(); i++) {
             System.out.print("ID Aturan : " + arrCFHasil.get(i).getIdAturan() + " ~ ");
-            System.out.print("ID Kelompok Titik akupuntur : " + arrCFHasil.get(i).getTitikAkupuntur().getIdTitik() + " ~ ");
+            System.out.print("ID Kelompok Titik akupuntur : " + arrCFHasil.get(i).getTitikAkupuntur().getIdKelTitik() + " ~ ");
             System.out.println("CF : " + arrCFHasil.get(i).getCfValue());
         }
         System.out.println(">>>-----------------------<<<\n");
@@ -493,22 +572,22 @@ public class FormKonsultasi extends javax.swing.JFrame {
                 }
             }
             System.out.println("--> Kesimpulan Aturan : ");
-            System.out.println("ID Kelompok Titik Akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdTitik() + " ~ "
+            System.out.println("ID Kelompok Titik Akupuntur : " + arrRule.get(i).getTitikAkupuntur().getIdKelTitik() + " ~ "
                     + " CF Aturan : " + arrRule.get(i).getCfValue());
             System.out.println("-----------------------------------------------");
         }
     }
 
-    public TitikAkupuntur getTitikAkupunturById(String id) {
-        TitikAkupuntur titikAkupuntur = new TitikAkupuntur();
+    public KelompokTitikAkupuntur getTitikAkupunturById(String id) {
+        KelompokTitikAkupuntur titikAkupuntur = new KelompokTitikAkupuntur();
         try {
             Connection c = KoneksiDb.getKoneksi();
             Statement s = c.createStatement();
             String sql = "SELECT * FROM kel_titik_akp WHERE id_kel_titik ='" + id + "'";
             ResultSet r = s.executeQuery(sql);
             while (r.next()) {
-                titikAkupuntur.setIdTitik(r.getString("id_kel_titik"));
-                titikAkupuntur.setNamaTitik(r.getString("ket_kel_titik"));
+                titikAkupuntur.setIdKelTitik(r.getString("id_kel_titik"));
+                titikAkupuntur.setKetKelTitik(r.getString("ket_kel_titik"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -562,7 +641,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
     private void btnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahActionPerformed
         double mb = Double.parseDouble(txtMB.getText());
         double md = Double.parseDouble(txtMD.getText());
-        if (!taGejala.getText().toString().equals("") && (mb != 0.0 || md != 0.0)) {
+        if (!taGejala.getText().toString().equals("") && (mb != md) && !isGejalaSelected(taGejala.getText().toString())) {
             double selisihMbMd = mb - md;
             double minimal = mb;
             if (md < minimal) {
@@ -575,21 +654,36 @@ public class FormKonsultasi extends javax.swing.JFrame {
             if (!tblGejala.getSelectionModel().isSelectionEmpty()) {
                 idGejala = tblGejala.getValueAt(tblGejala.getSelectedRow(), 0).toString();
             }
-            String cfValue = String.valueOf(CF);
+            
+            String cfValue = "";
+            cfValue = df.format(Double.parseDouble(String.valueOf(CF)));
+            
             addTblFaktaRow(idGejala, tblGejala.getValueAt(tblGejala.getSelectedRow(), 1).toString(), cfValue);
             taGejala.setText("");
             txtMB.setText("0.0");
             txtMD.setText("0.0");
         } else {
+            System.out.println("");
             if (taGejala.getText().toString().equals("")) {
                 JOptionPane.showMessageDialog(rootPane, "pilih dahulu satu buah gejala!");
-            }
-            if (mb == 0 && md == 0) {
-                JOptionPane.showMessageDialog(rootPane, "nilai MB dan MD tidak boleh dua-duanya 0 !");
+            } else if (mb == md) {
+                JOptionPane.showMessageDialog(rootPane, "nilai MB sama dengan MD, harap periksa kembali nilai yang anda masukkan");
+            } else if (isGejalaSelected(taGejala.getText().toString())) {
+                JOptionPane.showMessageDialog(rootPane, "gejala sudah dimasukkan!");
             }
         }
     }//GEN-LAST:event_btnTambahActionPerformed
 
+    private boolean isGejalaSelected(String namaGejala){
+        boolean ada = false;
+        for (int i = 0; i < tblFakta.getRowCount(); i++) {
+            if (namaGejala.equalsIgnoreCase(tblFakta.getValueAt(i, 1).toString())) {
+                ada = true;
+            }
+        }
+        return ada;
+    }
+    
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         // TODO add your handling code here:
         if (tblFakta.getSelectedRow() > -1) {
@@ -658,6 +752,7 @@ public class FormKonsultasi extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -671,5 +766,6 @@ public class FormKonsultasi extends javax.swing.JFrame {
     private javax.swing.JTable tblGejala;
     private javax.swing.JFormattedTextField txtMB;
     private javax.swing.JFormattedTextField txtMD;
+    private javax.swing.JTextField txtSearchGejala;
     // End of variables declaration//GEN-END:variables
 }

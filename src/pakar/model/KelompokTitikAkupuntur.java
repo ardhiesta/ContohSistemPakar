@@ -9,26 +9,26 @@ package pakar.model;
  *
  * @author linuxluv
  */
-public class TitikAkupuntur {
+public class KelompokTitikAkupuntur {
 
-    private String idTitik;
-    private String namaTitik;
+    private String idKelTitik;
+    private String ketKelTitik;
     private double cfValue;
 
-    public String getIdTitik() {
-        return idTitik;
+    public String getIdKelTitik() {
+        return idKelTitik;
     }
 
-    public void setIdTitik(String idTitik) {
-        this.idTitik = idTitik;
+    public void setIdKelTitik(String idKelTitik) {
+        this.idKelTitik = idKelTitik;
     }
 
-    public String getNamaTitik() {
-        return namaTitik;
+    public String getKetKelTitik() {
+        return ketKelTitik;
     }
 
-    public void setNamaTitik(String namaTitik) {
-        this.namaTitik = namaTitik;
+    public void setKetKelTitik(String ketKelTitik) {
+        this.ketKelTitik = ketKelTitik;
     }
 
     public double getCfValue() {

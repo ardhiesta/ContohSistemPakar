@@ -15,7 +15,7 @@ public class Aturan {
 
     private String idAturan;
     private ArrayList<Gejala> arrGejala;
-    private TitikAkupuntur titikAkupuntur;
+    private KelompokTitikAkupuntur titikAkupuntur;
     private double cfValue;
 
     public String getIdAturan() {
@@ -34,11 +34,11 @@ public class Aturan {
         this.arrGejala = arrGejala;
     }
 
-    public TitikAkupuntur getTitikAkupuntur() {
+    public KelompokTitikAkupuntur getTitikAkupuntur() {
         return titikAkupuntur;
     }
 
-    public void setTitikAkupuntur(TitikAkupuntur titikAkupuntur) {
+    public void setTitikAkupuntur(KelompokTitikAkupuntur titikAkupuntur) {
         this.titikAkupuntur = titikAkupuntur;
     }
 
