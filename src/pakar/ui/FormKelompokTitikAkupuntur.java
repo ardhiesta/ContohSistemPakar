@@ -12,9 +12,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import pakar.db.KoneksiDb;
 
@@ -39,6 +43,23 @@ public class FormKelompokTitikAkupuntur extends javax.swing.JFrame {
         
         initTblKelTitik();
         initTxtSearch();
+        initTblKelTitikSelection();
+    }
+    
+    private void initTblKelTitikSelection(){
+        tblKelTitik.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblKelTitik.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (tblKelTitik.getSelectedRowCount() > 0) {
+                    btnEdit.setEnabled(true);
+                    btnHapus.setEnabled(true);
+                } else {
+                    btnEdit.setEnabled(false);
+                    btnHapus.setEnabled(false);
+                }
+            }
+        });
     }
     
     private void initTxtSearch(){
@@ -107,6 +128,14 @@ public class FormKelompokTitikAkupuntur extends javax.swing.JFrame {
         }
     }
 
+    private void showDialogKelTitikAKupuntur(String title, String idKelTitik, String kelTitik,
+            boolean isEdit, DefaultTableModel modelTblKelTitik){
+        DialogKelompokTitikAkupuntur dialogKelompokTitikAkupuntur = 
+                new DialogKelompokTitikAkupuntur(this, rootPaneCheckingEnabled, title, 
+                        idKelTitik, kelTitik, isEdit, modelTblKelTitik);
+        dialogKelompokTitikAkupuntur.setVisible(true);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -135,10 +164,25 @@ public class FormKelompokTitikAkupuntur extends javax.swing.JFrame {
         });
 
         jButton2.setText("Tambah Kel. Titik Akupuntur");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Edit Kel. Titik Akupuntur");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnHapus.setText("Hapus Kel. Titik Akupuntur");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
 
         tblKelTitik.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -210,6 +254,32 @@ public class FormKelompokTitikAkupuntur extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        showDialogKelTitikAKupuntur("Tambah Kel. Titik Akupuntur", "", "", 
+                false, modelTblKelTitik);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // TODO add your handling code here:
+        showDialogKelTitikAKupuntur("Edit Kel. Titik Akupuntur", 
+                tblKelTitik.getValueAt(tblKelTitik.getSelectedRow(), 0).toString(), 
+                tblKelTitik.getValueAt(tblKelTitik.getSelectedRow(), 1).toString(), 
+                true, modelTblKelTitik);
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        // TODO add your handling code here:
+        int confirm = JOptionPane.showConfirmDialog(rootPane, "Anda yakin untuk menghapus kel. titik \""
+                +tblKelTitik.getValueAt(tblKelTitik.getSelectedRow(), 0)+" : "
+                +tblKelTitik.getValueAt(tblKelTitik.getSelectedRow(), 1)+"\"?", "Hapus Kel. Titik Akupuntur", 
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (confirm == 0) {
+            // hapus data
+            hapusKelTitik();
+        } 
+    }//GEN-LAST:event_btnHapusActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -255,4 +325,24 @@ public class FormKelompokTitikAkupuntur extends javax.swing.JFrame {
     private javax.swing.JTable tblKelTitik;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
+
+    private void hapusKelTitik() {
+        try {
+            PreparedStatement ps = null;
+            Connection c = KoneksiDb.getKoneksi();
+            String sql = "delete from kel_titik_akp where id_kel_titik = ?";
+            ps = c.prepareStatement(sql);
+            ps.setString(1, String.valueOf(tblKelTitik.getValueAt(tblKelTitik.getSelectedRow(), 0)));
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(rootPane, "Berhasil menghapus data kel. titik akupuntur", 
+                        "Hapus Kel. Titik Akupuntur", JOptionPane.INFORMATION_MESSAGE);
+                searchData("", modelTblKelTitik);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Gagal menghapus data kel. titik akupuntur! "+ex.getMessage(), 
+                        "Hapus Kel. Titik Akupuntur", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(FormGejala.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

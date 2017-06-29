@@ -22,7 +22,7 @@ public class KoneksiDb {
             try {
                 String url = "jdbc:mysql://localhost:3306/tesis_db";
                 String user = "root";
-                String password = "wkwkwk";
+                String password = "";
                 DriverManager.registerDriver(new com.mysql.jdbc.Driver());
                 koneksi = DriverManager.getConnection(url, user, password);
             } catch (SQLException t) {

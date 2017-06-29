@@ -17,60 +17,30 @@ import pakar.db.KoneksiDb;
 
 /**
  *
- * @author wonderlabs
+ * @author linux
  */
-public class DialogGejala extends javax.swing.JDialog {
+public class DialogKelompokTitikAkupuntur extends javax.swing.JDialog {
     boolean isEdit = false;
-    DefaultTableModel modelTblGejala;
-    String id_gejala = "";
+    DefaultTableModel modelTblKelTitik;
+    String idKelTitik = "";
 
     /**
-     * Creates new form DialogGejala
+     * Creates new form DialogKelompokTitikAkupuntur
      */
-    public DialogGejala(java.awt.Frame parent, boolean modal, String title, String idGejala, String gejala, 
-            boolean isEdit, DefaultTableModel modelTblGejala) {
+    public DialogKelompokTitikAkupuntur(java.awt.Frame parent, boolean modal, 
+            String title, String idKelTitik, String kelTitik, 
+            boolean isEdit, DefaultTableModel modelTblKelTitik) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
-        labelJudulGejala.setText(title);
-        txtID.setText(idGejala);
-        txtGejala.setText(gejala);
+        labelKelTitik.setText(title);
+        txtID.setText(idKelTitik);
+        txtKeterangan.setText(kelTitik);
         this.isEdit = isEdit;
-        this.modelTblGejala = modelTblGejala;
+        this.modelTblKelTitik = modelTblKelTitik;
         if (isEdit) {
-            this.id_gejala = txtID.getText();
-        }
-    }
-    
-    public void searchDataGejala(String keyword, DefaultTableModel modelTbl) {
-        ResultSet r = null;
-        PreparedStatement ps = null;
-        try {
-            Connection c = KoneksiDb.getKoneksi();
-            String sql = "select * from gejala where id_gejala like ? or nama_gejala like ?";
-            ps = c.prepareStatement(sql);
-            ps.setString(1, "%" + keyword + "%");
-            ps.setString(2, "%" + keyword + "%");
-            r = ps.executeQuery();
-            /* clear tabel, hapus semua baris sebelum menampilkan hanya record terpilih */
-            modelTbl.setRowCount(0);
-            while (r.next()) {
-                Object[] o = new Object[5];
-                o[0] = r.getString("id_gejala");
-                o[1] = r.getString("nama_gejala");
-                modelTbl.addRow(o);
-            }
-            r.close();
-            ps.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(FormKonsultasi.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                ps.close();
-                r.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(FormKonsultasi.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            this.idKelTitik = txtID.getText();
+            System.out.println("");
         }
     }
 
@@ -83,29 +53,28 @@ public class DialogGejala extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        labelJudulGejala = new javax.swing.JLabel();
+        labelKelTitik = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         txtID = new javax.swing.JTextField();
-        txtGejala = new javax.swing.JTextField();
+        txtKeterangan = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        labelJudulGejala.setFont(new java.awt.Font("Lucida Grande", 0, 15)); // NOI18N
-        labelJudulGejala.setText("[edit/insert] gejala");
+        labelKelTitik.setFont(new java.awt.Font("Dialog", 0, 15)); // NOI18N
+        labelKelTitik.setText("[edit/insert] Kelompok Titik Akupuntur");
 
         jLabel2.setText("ID");
 
-        jLabel3.setText("Gejala");
+        jLabel3.setText("Keterangan");
 
-        txtID.setPreferredSize(new java.awt.Dimension(80, 30));
+        txtID.setPreferredSize(new java.awt.Dimension(4, 30));
 
-        txtGejala.setPreferredSize(new java.awt.Dimension(80, 30));
+        txtKeterangan.setPreferredSize(new java.awt.Dimension(70, 30));
 
         jButton1.setText("Simpan");
-        jButton1.setPreferredSize(new java.awt.Dimension(90, 30));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -113,7 +82,6 @@ public class DialogGejala extends javax.swing.JDialog {
         });
 
         jButton2.setText("Batal");
-        jButton2.setPreferredSize(new java.awt.Dimension(75, 30));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -129,39 +97,39 @@ public class DialogGejala extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(25, 25, 25)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtGejala, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(txtKeterangan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labelJudulGejala)
+                            .addComponent(labelKelTitik)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 217, Short.MAX_VALUE)))
+                                .addComponent(jButton1)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton2)))
+                        .addGap(0, 100, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelJudulGejala)
+                .addComponent(labelKelTitik)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(txtID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(txtGejala, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtKeterangan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -176,58 +144,91 @@ public class DialogGejala extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         if (isEdit) {
-            editGejala();
+            editKelTitik();
         } else {
-            insertGejala();
+            insertKelTitik();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void insertGejala(){
+    private void insertKelTitik(){
         try {
             PreparedStatement ps = null;
             Connection c = KoneksiDb.getKoneksi();
-            String sql = "insert into gejala values (?, ?)";
+            String sql = "insert into kel_titik_akp values (?, ?)";
             ps = c.prepareStatement(sql);
             ps.setString(1, txtID.getText());
-            ps.setString(2, txtGejala.getText());
+            ps.setString(2, txtKeterangan.getText());
             int result = ps.executeUpdate();
             if (result > 0) {
-                JOptionPane.showMessageDialog(rootPane, "Berhasil menambahkan gejala baru", 
-                        "Insert Gejala", JOptionPane.INFORMATION_MESSAGE);
-                searchDataGejala("", modelTblGejala);
+                JOptionPane.showMessageDialog(rootPane, "Berhasil menambahkan gejala kel. titik akupuntur", 
+                        "Insert Kel. Titik AKupuntur", JOptionPane.INFORMATION_MESSAGE);
+                searchData("", modelTblKelTitik);
                 this.dispose();
             } else {
                 
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Gagal menambahkan gejala baru! "+ex.getMessage(), 
-                        "Insert Gejala", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Gagal menambahkan kel. titik akupuntur! "+ex.getMessage(), 
+                        "Insert Kel. Titik AKupuntur", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(DialogGejala.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void editGejala(){
+    private void editKelTitik(){
         try {
             PreparedStatement ps = null;
             Connection c = KoneksiDb.getKoneksi();
-            String sql = "update gejala set id_gejala = ?, nama_gejala = ? where id_gejala = ?";
+            String sql = "update kel_titik_akp set id_kel_titik = ?, ket_kel_titik = ? where id_kel_titik = ?";
             ps = c.prepareStatement(sql);
             ps.setString(1, txtID.getText());
-            ps.setString(2, txtGejala.getText());
-            ps.setString(3, id_gejala);
+            ps.setString(2, txtKeterangan.getText());
+            ps.setString(3, idKelTitik);
+            String testxxx = ps.toString();
             int result = ps.executeUpdate();
             if (result > 0) {
-                JOptionPane.showMessageDialog(rootPane, "Berhasil mengedit data gejala", 
-                        "Edit Gejala", JOptionPane.INFORMATION_MESSAGE);
-                searchDataGejala("", modelTblGejala);
+                JOptionPane.showMessageDialog(rootPane, "Berhasil mengedit data kel. titik akupuntur", 
+                        "Edit Kelompok Titik AKupuntur", JOptionPane.INFORMATION_MESSAGE);
+                searchData("", modelTblKelTitik);
                 this.dispose();
             } else {
                 
             }
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Gagal mengedit data gejala! "+ex.getMessage(), 
-                        "Edit Gejala", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Gagal mengedit data kel. titik akupuntur! "+ex.getMessage(), 
+                        "Edit Kelompok Titik AKupuntur", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(DialogGejala.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void searchData(String keyword, DefaultTableModel modelTbl) {
+        ResultSet r = null;
+        PreparedStatement ps = null;
+        try {
+            Connection c = KoneksiDb.getKoneksi();
+            String sql = "select * from kel_titik_akp where id_kel_titik like ? or ket_kel_titik like ?";
+            ps = c.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keyword + "%");
+            r = ps.executeQuery();
+            /* clear tabel, hapus semua baris sebelum menampilkan hanya record terpilih */
+            modelTbl.setRowCount(0);
+            while (r.next()) {
+                Object[] o = new Object[5];
+                o[0] = r.getString("id_kel_titik");
+                o[1] = r.getString("ket_kel_titik");
+                modelTbl.addRow(o);
+            }
+            r.close();
+            ps.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormKonsultasi.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                ps.close();
+                r.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(FormKonsultasi.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -248,20 +249,20 @@ public class DialogGejala extends javax.swing.JDialog {
 //                }
 //            }
 //        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(DialogGejala.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(DialogKelompokTitikAkupuntur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(DialogGejala.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(DialogKelompokTitikAkupuntur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(DialogGejala.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(DialogKelompokTitikAkupuntur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(DialogGejala.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(DialogKelompokTitikAkupuntur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
 //        //</editor-fold>
 //
 //        /* Create and display the dialog */
 //        java.awt.EventQueue.invokeLater(new Runnable() {
 //            public void run() {
-//                DialogGejala dialog = new DialogGejala(new javax.swing.JFrame(), true);
+//                DialogKelompokTitikAkupuntur dialog = new DialogKelompokTitikAkupuntur(new javax.swing.JFrame(), true);
 //                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 //                    @Override
 //                    public void windowClosing(java.awt.event.WindowEvent e) {
@@ -278,8 +279,8 @@ public class DialogGejala extends javax.swing.JDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel labelJudulGejala;
-    private javax.swing.JTextField txtGejala;
+    private javax.swing.JLabel labelKelTitik;
     private javax.swing.JTextField txtID;
+    private javax.swing.JTextField txtKeterangan;
     // End of variables declaration//GEN-END:variables
 }
